@@ -207,7 +207,7 @@ In each tree state, ToT **proposes** *k* next steps, then **evaluates** each ste
 <summary>"Describe, Explain, Plan and Select: Interactive Planning with Large Language Models Enables Open-World Multi-Task Agents", Wang et al. (2024) [<a href="https://arxiv.org/abs/2302.01560" target="_blank">paper</a>]</summary>
 <br>
 
-**Describe, Explain, Plan and Select (DEPS)** facilitates better error correction on the initial LLM-generated plan by integrating **description of the plan execution process** and providing ** self-explanation of feedback when encountering failures** during the extended planning phases. Furthermore, it includes **a goal selector, a trainable module that ranks parallel candidate sub-goals**, thereby refining the initial plan.
+**Describe, Explain, Plan and Select (DEPS)** facilitates better error correction on the initial LLM-generated plan by integrating **description of the plan execution process** and providing **self-explanation of feedback when encountering failures** during the extended planning phases. Furthermore, it includes **a goal selector, a trainable module that ranks parallel candidate sub-goals**, thereby refining the initial plan.
 
 <p align="center">
 <img src="images/wang-et-al-2024a-figure-2.png" width="80%">
@@ -233,7 +233,7 @@ In each tree state, ToT **proposes** *k* next steps, then **evaluates** each ste
 <summary>"ProgPrompt: Generating Situated Robot Task Plans using Large Language Models", Singh et al. (2022) [<a href="https://arxiv.org/abs/2209.11302" target="_blank">paper</a>]</summary>
 <br>
 
-**ProgPrompt** prompts the LLM with program-like specifications of the available actions and objects in an environment, as well as with example programs, to generate ** an executable plan** for the robot tasks.
+**ProgPrompt** prompts the LLM with program-like specifications of the available actions and objects in an environment, as well as with example programs, to generate **an executable plan** for the robot tasks.
 
 <p align="center">
 <img src="images/singh-et-al-2022-figure-1.png" width="55%">
@@ -357,7 +357,7 @@ The main context includes **(1) system instructions**, which are static instruct
 <summary>"MemoryBank: Enhancing Large Language Models with Long-Term Memory", Zhong et al. (2023) [<a href="https://arxiv.org/abs/2305.10250" target="_blank">paper</a>]</summary>
 <br>
 
-**MemoryBank** features ** a memory updating system** inspired by the Ebbinghaus Forgetting Curve theory. This system **allows the AI to forget and reinforce memories based on time elapsed and the importance of the memory**, thereby offering a more human-like memory process.
+**MemoryBank** features **a memory updating system** inspired by the Ebbinghaus Forgetting Curve theory. This system **allows the AI to forget and reinforce memories based on time elapsed and the importance of the memory**, thereby offering a more human-like memory process.
 
 <p align="center">
 <img src="images/zhong-et-al-2023-figure-1.png" width="70%">
@@ -396,7 +396,7 @@ The main context includes **(1) system instructions**, which are static instruct
 <summary>"JARVIS-1: Open-World Multi-task Agents with Memory-Augmented Multimodal Language Models", Wang et al. (2023) [<a href="https://arxiv.org/abs/2311.05997" target="_blank">paper</a>]</summary>
 <br>
 
-**JARVIS-1** uses ** a multimodal memory** to store experiences and retrieve them during planning. It **employs the multimodal model CLIP** to measure alignment within a multimodal key-value memory, where the key includes the task and visual observations, and the value is a text-based representation of successfully completed plans.
+**JARVIS-1** uses **a multimodal memory** to store experiences and retrieve them during planning. It **employs the multimodal model CLIP** to measure alignment within a multimodal key-value memory, where the key includes the task and visual observations, and the value is a text-based representation of successfully completed plans.
 
 <p align="center">
 <img src="images/wang-et-al-2023b-figure-3.png" width="80%">
