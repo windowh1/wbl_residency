@@ -7,9 +7,6 @@ assignees: ''
 
 ---
 
-### Title
-> Provide a concise, descriptive title for this issue.
-
 ### Issue Type
 > Research / Implementation / Other
 
