@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 
 # Virtual environments
-.venv/
+**/.venv/
 env/
 venv/
 ENV/
@@ -41,3 +41,7 @@ dist/
 # Coverage reports
 htmlcov/
 .coverage
+
+# Custom
+**/.legacy
+**/mcp_library
