@@ -1,0 +1,23 @@
+{
+  "prefix": "test_pptx",
+  "retries": 10,
+  "claude": {
+    "api_key": "YOUR_API_KEY",
+    "model": "claude-sonnet-4-5-20250929",
+    "max_tokens": 4096,
+    "temperature": 0.5,
+    "user_prompt": "Create a PowerPoint presentation about AI prompting techniques."
+  },
+  "mcp_servers": {
+      "ppt": {
+        "command": "python",
+        "args": ["mcp_library/Office-PowerPoint-MCP-Server/ppt_mcp_server.py"]
+    }
+  },
+  "skills": {
+    "betas": ["code-execution-2025-08-25", "skills-2025-10-02"],
+    "container_skills": [{"type": "anthropic", "skill_id": "pptx", "version": "20251013"}],
+    "tools": [{"type": "code_execution_20250825", "name": "code_execution"}]
+  }
+}
+  
