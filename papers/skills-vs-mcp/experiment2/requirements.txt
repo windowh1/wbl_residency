@@ -1,0 +1,10 @@
+anthropic
+mcp
+fastmcp
+duckduckgo-search
+requests
+pandas 
+jinja2 
+numpy 
+requests 
+tqdm

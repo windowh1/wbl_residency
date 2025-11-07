@@ -1,0 +1,31 @@
+{
+  "num_samples": 10,
+  "aggregate_metrics": {
+    "is_correct": 0.1,
+    "is_incorrect": 0.9
+  },
+  "accuracy": 0.1,
+  "average_metadata": {
+    "averages": {
+      "duration_seconds": 316.31,
+      "input_tokens": 538636.2,
+      "output_tokens": 4063.2,
+      "total_tokens": 542699.4,
+      "tool_calls": 32.7,
+      "api_call_count": 26.0
+    },
+    "totals": {
+      "duration_seconds": 3163.09,
+      "input_tokens": 5386362,
+      "output_tokens": 40632,
+      "total_tokens": 5426994,
+      "tool_calls": 327,
+      "api_call_count": 260
+    },
+    "stop_reasons": [
+      "end_turn",
+      "tool_use"
+    ]
+  },
+  "random_seed": 42
+}
