@@ -230,7 +230,7 @@ BrowseComp 벤치마크를 사용하여 Skills와 MCP 구현의 성능을 평가
 
 **구현 방식**
 
-| 구분        | **Skills**                                                                                               | **MCP**                                                                                                 |
+| 구분 | **Skills** | **MCP** |
 | - | - | - |
 | **구현체**   | [`strategic-search`](experiment2/claude_agent/extensions/skills/strategic-search) | [`search-mcp-server`](experiment2/claude_agent/extensions/mcp/search-mcp-server) |
 | **검색 방식** | Skills가 `search-mcp-server`를 통해 웹 접근                                                                     | MCP 서버가 직접 검색 API 호출                                                                                    |
@@ -293,8 +293,8 @@ Skills 방식에서는 `SKILL.md`를 통해 **체계적인 문제 해결 전략*
   Skills (검색 결과를 기반으로 워크플로우 재개)
   ```
 
-  | 역할         | **Skills**                                                                            | **MCP**                                            |
-| - | - | - |
+  | 역할 | **Skills** | **MCP** |
+  | - | - | - |
   | **핵심 기능**  | 전략 & 워크플로우 제어                                                                         | 실제 검색 실행                                           |
   | **구체적 역할** | - 문제 분석 및 제약 조건 추출<br>- 검색 전략 수립 및 순서 결정<br>- 검색 예산 관리 (카운트 추적)<br>- 후보 검증 및 조기 종료 판단 | - Skills의 지시에 따라 실제 웹 검색 수행<br>- 검색 결과를 Skills에 전달 |
 
