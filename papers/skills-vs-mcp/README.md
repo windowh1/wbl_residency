@@ -20,12 +20,12 @@ Skills는 **재사용 가능한 워크플로우 패키징 메커니즘**이고, 
 [3.1. Task 1: PPTX](#31-task-1-pptx)\
 [3.2. Task 2: Web Search](#32-task-2-web-search)\
 [4.Integrated Use of Skills and MCP](#4-integrated-use-of-skills-and-mcp)\
-[4.1. Integrated System Architecture](#41-integrated-system-architecture)
-[4.2. Use Cases by Scenario](#42-use-cases-by-scenario)
-[5.Code Execution with MCP](#5-code-execution-with-mcp)
-[5.1. Background](#51-background)
-[5.2. Implementation](#52-implementation)
-[5.3. Experiment](#53-experiment)
+[4.1. Integrated System Architecture](#41-integrated-system-architecture)\
+[4.2. Use Cases by Scenario](#42-use-cases-by-scenario)\
+[5.Code Execution with MCP](#5-code-execution-with-mcp)\
+[5.1. Background](#51-background)\
+[5.2. Implementation](#52-implementation)\
+[5.3. Experiment](#53-experiment)\
 [6. References](#6-references)
 
 
@@ -77,6 +77,7 @@ Skills는 **재사용 가능한 워크플로우 패키징 메커니즘**이고, 
   2. 현재 작업과 관련된 skill의 `SKILL.md` **Markdown 지침**을 컨텍스트에 주입.
   3. 추가적인 자료(스크립트, 리소스 등)는 필요할 경우에만 **선택적으로** 접근.
 
+---
 
 ### 1.2. API 사용
 
@@ -115,6 +116,7 @@ response = client.beta.messages.create(
 
 ```
 
+---
 
 ### 1.3. 사용 가능 Skills
 
@@ -141,7 +143,6 @@ response = client.beta.messages.create(
 * 생성 방법
   * **필수**: `SKILL.md` 상단에 **YAML frontmatter**(`name`, `description`), 본문에 **지침**(워크플로우, 규칙, 예시 등)을 작성합니다.
   * **선택**: 동일한 폴더에 스크립트 파일, 템플릿 등을 작성합니다.
-
 
 ---
 
@@ -215,6 +216,7 @@ response = client.beta.messages.create(
 
     ![task1-mcp](images/task1-mcp.png)
 
+---
 
 ### 3.2. Task 2: Web Search
 
@@ -338,7 +340,6 @@ Skills 방식에서는 `SKILL.md`를 통해 **체계적인 문제 해결 전략*
 
   다만 본 실험은 **제한된 샘플 크기**(10개)와 **초기 단계의 Skills 구현**이라는 한계를 가지고 있습니다. 따라서 실험의 결과는 Skills 개념 자체의 한계를 보여주기 보다는, BrowseComp와 같은 고난도 벤치마크에서 효과적인 검색 전략을 정의하는 것이 까다로울 수 있음을 보여줍니다.
 
-
 ---
 
 #### 주요 인사이트
@@ -355,8 +356,7 @@ Skills 방식에서는 `SKILL.md`를 통해 **체계적인 문제 해결 전략*
 
 ## 4. Integrated Use of Skills and MCP
 
-Skills와 MCP는 서로 다른 강점을 가지고 있으며, 이 둘을 함께 활용하면 더 강력한 AI 에이전트 시스템을 구축할 수 있습니다. 
-
+Skills와 MCP는 서로 다른 강점을 가지고 있으며, 이 둘을 함께 활용하면 더 강력한 AI 에이전트 시스템을 구축할 수 있습니다.\
 이 목차는 MCP를 통해 문제를 해결하는 과정에서 발견된 워크플로우를 자동으로 Skills로 패키징하는 시스템을 제시합니다.
 
 ### 4.1. Integrated System Architecture
@@ -375,6 +375,8 @@ MCP 서버를 통해 문제를 해결한 후, 에이전트가 해결 과정(traj
 
 * 디렉토리: [`extended_agent`](./extended_agent)
 * 사용된 MCP 서버: `search`, [`fetch`](https://github.com/modelcontextprotocol/servers/tree/main/src/fetch), [`desktop-commander`](https://github.com/wonderwhy-er/DesktopCommanderMCP/)
+
+---
 
 ### 4.2. Use Cases by Scenario
 
@@ -412,6 +414,8 @@ typescript_trends.txt 파일로 저장해줘.
 * **재사용성**: 다양한 시나리오에 적용 가능
 
 **생성된 Skill: `web-research-documenter`**
+
+---
 
 #### 시나리오 2: 기존 Skill 활용 → 개선된 버전 생성
 
@@ -462,6 +466,8 @@ React 생태계의 최신 트렌드를 종합 분석해줘:
 이 패턴은 기존 스킬과 확연한 차별점을 가지며, 오픈소스 생태계 비교 분석에 일반적으로 활용 가능하므로 새로운 Skill 을 생성합니다.
 
 **생성된 Skill: `tech-ecosystem-analyzer`**
+
+---
 
 #### 시나리오 3: 여러 Trajectory 통합 → 새로운 Skill 생성
 
@@ -560,6 +566,8 @@ Anthropic이 제안한 해법은 MCP 도구를 에이전트에 직접 노출하�
 
 이를 통해 약 **150,000 토큰을 소비하던 워크플로우가 약 2,000 토큰으로 감소**하여 **98.7%의 토큰 사용량 절감**을 달성했다는 성과 또한 보고되었습니다.
 
+---
+
 ### 5.2. Implementation
 
 위에서 소개한 Anthropic의 Code Execution with MCP 접근법을 Python 환경에서 구현했습니다.
@@ -620,7 +628,9 @@ extensions/wrapped_mcp/
     
     asyncio.run(main())
     ```
-    
+
+---
+	
 ### 5.3. Experiment
 
 MCP를 직접 사용하는 일반적인 방식(**Direct MCP**)과 Code Execution을 통해 사용하는 방식(**Code Execution with MCP**)의 성능을 비교합니다.
@@ -688,6 +698,7 @@ Skills를 활용해 **명시적인 워크플로우**를 따르도록 유도하�
  코드 실행 방식은 안전한 샌드박스 환경 구축 등 추가적인 인프라 요구사항을 가져오며, 이는 운영 오버헤드와 보안 고려사항을 증가시킬 수 있습니다.
 
 ---
+
 ## 6. References
 
 * https://www.anthropic.com/news/skills
