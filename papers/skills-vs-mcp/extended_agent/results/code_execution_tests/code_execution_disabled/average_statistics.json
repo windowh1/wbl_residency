@@ -1,0 +1,10 @@
+{
+    "count": 5,
+    "avg_duration_seconds": 111.306,
+    "avg_system_prompt_input_tokens": 12319.0,
+    "avg_input_tokens": 216834.8,
+    "avg_output_tokens": 4414.0,
+    "avg_total_tokens": 233567.8,
+    "avg_tool_calls": 10.4,
+    "avg_api_call_count": 10.0
+}

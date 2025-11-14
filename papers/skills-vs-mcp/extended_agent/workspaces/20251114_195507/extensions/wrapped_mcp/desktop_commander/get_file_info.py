@@ -1,0 +1,63 @@
+"""
+Auto-generated MCP tool wrapper for get_file_info
+Server: desktop-commander
+Description: Retrieve detailed metadata about a file or directory including:
+- size
+- creation time
+- last modified time 
+- permissions
+- type
+- lineCount (for text files)
+- lastLine (zero-indexed number of last line, for text files)
+- appendPosition (line number for appending, for text files)
+
+Only works within allowed directories.
+
+IMPORTANT: Always use absolute paths for reliability. Paths are automatically normalized regardless of slash direction. Relative paths may fail as they depend on the current working directory. Tilde paths (~/...) might not work in all contexts. Unless the user explicitly asks for relative paths, use absolute paths.
+This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.
+Input Schema:
+{
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "path"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+"""
+
+import httpx
+from typing import Dict, Any
+
+PROXY_URL = "http://localhost:8082"
+SERVER_NAME = "desktop-commander"
+TOOL_NAME = "get_file_info"
+
+async def get_file_info(params: Dict[str, Any]) -> str:
+    """
+    Auto-generated function calling MCP tool 'get_file_info' on server 'desktop-commander'.
+    """
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        try:
+            response = await client.post(
+                f"{PROXY_URL}/mcp/{SERVER_NAME}/call_tool",
+                params={"tool_name": TOOL_NAME},
+                json=params
+            )
+            response.raise_for_status()
+            result = response.json()
+            
+            if result.get("success"):
+                return result.get("result", "")
+            else:
+                raise RuntimeError(f"Tool call failed: {result}")
+                
+        except httpx.TimeoutException:
+            raise RuntimeError(f"Timeout calling {TOOL_NAME}")
+        except httpx.HTTPError as e:
+            raise RuntimeError(f"HTTP error calling {TOOL_NAME}: {e}")

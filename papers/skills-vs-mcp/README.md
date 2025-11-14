@@ -19,7 +19,14 @@ Skills는 **재사용 가능한 워크플로우 패키징 메커니즘**이고, 
 [3. Skills vs MCP](#3-skills-vs-mcp)\
 [3.1. Task 1: PPTX](#31-task-1-pptx)\
 [3.2. Task 2: Web Search](#32-task-2-web-search)\
-[4. References](#4-references)
+[4.Integrated Use of Skills and MCP](#4-integrated-use-of-skills-and-mcp)\
+[4.1. Integrated System Architecture](#41-integrated-system-architecture)
+[4.2. Use Cases by Scenario](#42-use-cases-by-scenario)
+[5.Code Execution with MCP](#5-code-execution-with-mcp)
+[5.1. Background](#51-background)
+[5.2. Implementation](#52-implementation)
+[5.3. Experiment](#53-experiment)
+[6. References](#6-references)
 
 
 ---
@@ -344,11 +351,344 @@ Skills 방식에서는 `SKILL.md`를 통해 **체계적인 문제 해결 전략*
 * 즉 Skills은 MCP의 대안보다는, **상위 레이어의 추상화**로 보는 것이 더 적절해 보입니다. 이 둘은 서로 다른 강점을 가지고 있으며, 함께 사용할 때 시너지를 발휘할 수 있습니다 (Skills - 문제 해결 전략 제시, MCP - 외부 시스템과의 연결).
 
 
+---
 
+## 4. Integrated Use of Skills and MCP
+
+Skills와 MCP는 서로 다른 강점을 가지고 있으며, 이 둘을 함께 활용하면 더 강력한 AI 에이전트 시스템을 구축할 수 있습니다. 
+
+이 목차는 MCP를 통해 문제를 해결하는 과정에서 발견된 워크플로우를 자동으로 Skills로 패키징하는 시스템을 제시합니다.
+
+### 4.1. Integrated System Architecture
+
+#### 핵심 아이디어
+
+MCP 서버를 통해 문제를 해결한 후, 에이전트가 해결 과정(trajectory)을 분석합니다. 재사용 가능한 워크플로우 패턴을 발견하면 자동으로 Custom Skill을 생성하고, 생성된 스킬은 향후 유사한 문제 해결 시 참고 자료로 활용됩니다.
+
+#### 주요 기능
+
+1. **자동 Skill 생성**: trajectory를 분석하여 정형화할 만한 워크플로우를 발견하면 [`skill-creator`](https://github.com/anthropics/skills/tree/main/skill-creator) 스킬을 사용해 자동으로 스킬 생성
+2. **기존 Skill 개선**: 생성된 스킬 활용 과정에서 개선점 발견 시 새로운 버전의 스킬 생성
+3. **Skill 통합**: 여러 trajectory를 종합 분석(aggregate)하여 더욱 일반화된 스킬 생성
+
+#### 구현체
+
+* 디렉토리: [`extended_agent`](./extended_agent)
+* 사용된 MCP 서버: `search`, [`fetch`](https://github.com/modelcontextprotocol/servers/tree/main/src/fetch), [`desktop-commander`](https://github.com/wonderwhy-er/DesktopCommanderMCP/)
+
+### 4.2. Use Cases by Scenario
+
+#### 시나리오 1: MCP 기반 문제 해결 → Skill 생성
+
+**문제 정의**
+
+```
+TypeScript 최신 트렌드를 검색하고, 결과를 요약해서 
+typescript_trends.txt 파일로 저장해줘.
+```
+
+**해결 과정**
+
+1. `search` MCP 서버로 TypeScript 트렌드 검색
+2. `fetch` MCP 서버로 상세 정보 수집
+3. 정보 종합 및 요약
+4. `desktop-commander` MCP 서버를 사용하여 파일 로컬에 저장
+
+**워크플로우 패턴 분석**
+
+에이전트가 해결 과정을 분석한 결과, 다음과 같은 워크플로우 패턴을 발견했습니다:
+
+```
+1. 웹에서 특정 주제 정보 검색
+2. 관련 출처에서 상세 내용 수집
+3. 발견 사항 요약 및 종합
+4. 지정된 파일 위치에 요약본 저장
+```
+
+이 패턴은 다음 기준을 충족하여 Skill 생성이 적합하다고 판단되었습니다:
+
+* **복잡성**: 4단계의 명확한 구조
+* **도구 통합**: 웹 검색, fetch, 파일 시스템 작업
+* **재사용성**: 다양한 시나리오에 적용 가능
+
+**생성된 Skill: `web-research-documenter`**
+
+#### 시나리오 2: 기존 Skill 활용 → 개선된 버전 생성
+
+**문제 정의**
+
+```
+React 생태계의 최신 트렌드를 종합 분석해줘:
+
+1) 주요 라이브러리 업데이트 조사
+   - React Router, Redux, Zustand, TanStack Query, Jotai
+   - 각 라이브러리의 최신 버전과 주요 변경사항 검색
+
+2) GitHub 통계 수집 및 분석
+   - 각 라이브러리의 GitHub API 호출하여 데이터 수집
+   - Stars, Forks, Open Issues, Last Update 추출
+   - 성장률 계산 (최근 3개월 star 증가량)
+
+3) 종합 비교 분석
+   - 라이브러리별 점수 계산 (GitHub stars 등 기반)
+   - 가중 평균으로 종합 순위 산정
+   - 추천 라이브러리 선정 (상위 3개)
+
+4) 결과 저장
+   - 모든 분석 결과를 react_ecosystem_analysis.md에 저장
+   - 원본 데이터는 react_data.json에 저장
+```
+
+**해결 과정**
+
+1. `search` MCP 서버로 React 생태계 라이브러리 정보 검색
+2. `fetch` MCP 서버로 각 라이브러리의 상세 정보 수집
+3. `desktop-commander` MCP 서버로 GitHub API 호출 스크립트 실행
+4. 수집된 데이터를 기반으로 정량적 분석 수행 (점수 계산, 순위 산정)
+5. 분석 결과를 Markdown과 JSON 형식으로 이중 저장
+
+**워크플로우 패턴 분석**
+
+에이전트는 기존 `web-research-documenter` 스킬을 활용하여 문제를 해결했으나, 다음과 같은 추가 요구사항을 발견했습니다:
+
+```
+- Github API를 통한 데이터 수집
+- 계산 알고리즘 적용 (점수, 순위, 성장률)
+- 데이터 구조화 및 비교 분석
+- 실행 가능한 스크립트 생성
+- 이중 출력 형식 (원본 데이터 + 분석 리포트)
+```
+
+이 패턴은 기존 스킬과 확연한 차별점을 가지며, 오픈소스 생태계 비교 분석에 일반적으로 활용 가능하므로 새로운 Skill 을 생성합니다.
+
+**생성된 Skill: `tech-ecosystem-analyzer`**
+
+#### 시나리오 3: 여러 Trajectory 통합 → 새로운 Skill 생성
+
+**문제 정의**
+
+**문제 1: AI/ML 컨퍼런스 정보 수집**
+```
+2025년 동안 예정된 주요 AI/ML 컨퍼런스를 검색하고, 
+개최 날짜, 개최 장소, 주요 세션(트랙·키노트 포함), 
+공식 등록 링크를 시간순으로 정리해서 
+ai_conferences_2025.md로 저장해줘.
+```
+
+**문제 2: 스마트폰 출시 정보 수집**
+```
+2025년 1분기 주요 스마트폰 출시 정보를 검색하고, 
+모델명, 출시일, 주요 스펙을 출시일 순으로 정리해서 
+phone_launches_q1_2025.txt로 저장해줘.
+```
+
+**해결 과정**
+
+**문제 1 (AI/ML 컨퍼런스)**
+1. `search` MCP 서버로 2025년 AI/ML 컨퍼런스 정보 검색
+2. 각 컨퍼런스별 상세 정보(날짜, 장소, 세션) 추가 검색
+3. `fetch` MCP 서버로 공식 웹사이트 접근 및 정보 수집
+4. 개최 날짜 기준 시간순 정리
+5. `desktop-commander` MCP 서버로 Markdown 형식으로 저장
+
+**문제 2 (스마트폰 출시)**
+1. `search` MCP 서버로 2025년 Q1 스마트폰 출시 정보 검색
+2. 각 모델별 상세 스펙 정보 추가 검색
+3. 제조사 공식 페이지 접근 시도
+4. 출시일 기준 시간순 정리
+5. `desktop-commander` MCP 서버로 텍스트 형식으로 저장
+
+**워크플로우 패턴 분석**
+
+에이전트는 두 문제 해결 과정에서 다음과 같은 공통 패턴을 발견했습니다:
+
+```
+1. 특정 시간 범위의 이벤트/제품 정보 검색
+2. 각 항목별 세부 정보 추가 수집
+3. 공식 출처 접근 및 검증 (가능한 경우)
+4. 시간순 구조화 및 일관된 형식 정리
+5. 지정된 위치에 문서화하여 저장
+```
+
+이 공통적인 패턴은 다음 기준을 충족하여 Skill 생성이 적합하다고 판단되었습니다:
+
+* **복잡성**: 5단계의 체계적인 프로세스
+* **도구 통합**: 웹 검색, fetch, 파일 시스템 작업
+* **재사용성**: 다양한 도메인의 "출시/이벤트" 조사에 적용 가능
+
+**생성된 Skill: `release-tracker`**
 
 ---
 
-## 4. References
+## 5. Code Execution with MCP
+
+최근 Anthropic에서 발표한 ["Code Execution with MCP"](https://www.anthropic.com/engineering/code-execution-with-mcp) 아티클은 MCP 사용 시 발생하는 컨텍스트 윈도우 문제를 해결하는 새로운 접근법을 제시합니다.
+
+이 접근법은 엄밀히 말하면 Skills와 직접적인 관련은 없지만, **Skills의 핵심 장점인 Progressive Disclosure를 MCP 환경에서도 구현할 수 있는 방법론**이라는 점에서 함께 다룰 가치가 있습니다.
+
+### 5.1. Background
+
+#### 문제: MCP 스케일링에 따른 Context 오버헤드
+
+MCP가 AI 에이전트를 외부 시스템에 연결하는 업계 표준으로 자리잡으면서, 수천 개의 MCP 서버가 생성되었습니다. 한편 에이전트에 연결되는 MCP 서버와 도구의 수가 늘어남에 따라 심각한 스케일링 문제가 발생했습니다.
+
+대부분의 MCP 클라이언트는 **모든 도구 정의를 시작 시점에 시스템 프롬프트에 로드**합니다. 각 도구 정의는 다음과 같은 형태를 가집니다:
+
+```
+mcp-server-fetch.fetch 
+Description: Fetches a URL from the internet and extracts its contents as markdown 
+Parameters:
+	- url (required, string): URL to fetch
+	- max_length (optional, integer): Maximum number of characters to return (default: 5000)
+	- start_index (optional, integer): Starting character index for output (default: 0)
+	- raw (optional, boolean): Get actual HTML without simplification (default: false) Returns: Fetched content as markdown or raw HTML
+
+desktop-commander.write_file 
+Description: Writes or appends content to a file 
+Parameters:
+	- path (required, string): Absolute file path
+	- content (required, string): Content to write (recommended: 25-30 lines per chunk)
+	- mode (optional, string): Write mode - "rewrite" or "append" (default: "rewrite") 
+Returns: Confirmation of successful write operation
+```
+
+한두 개의 도구만 연결할 경우에는 큰 문제가 없지만, **수십, 수백 개의 도구를 연결하면 상당한 양의 토큰이 컨텍스트 윈도우를 차지**하게 됩니다. 여러 도구 사용이 필요한 복잡한 에이전트 워크플로우에서는 이러한 input token 증가로 인해 **처리 비용이 크게 상승하고**, **컨텍스트 limit에 빠르게 도달**하는 문제가 발생합니다.
+
+#### 해법: Code Execution with MCP
+
+Anthropic이 제안한 해법은 MCP 도구를 에이전트에 직접 노출하는 대신, **각 도구를 코드로 wrapping하여 파일시스템에 배치**하고, 에이전트가 **필요한 도구만 선택적으로 로드**하여 사용하도록 하는 것입니다.
+
+이를 통해 약 **150,000 토큰을 소비하던 워크플로우가 약 2,000 토큰으로 감소**하여 **98.7%의 토큰 사용량 절감**을 달성했다는 성과 또한 보고되었습니다.
+
+### 5.2. Implementation
+
+위에서 소개한 Anthropic의 Code Execution with MCP 접근법을 Python 환경에서 구현했습니다.
+
+**구현체 위치**: [`extended_agent`](./extended_agent)
+
+#### MCP 도구 Wrapping
+
+``` 
+extensions/wrapped_mcp/ 
+├── mcp_server_fetch/ # fetch MCP 서버
+│   ├── fetch.py  # fetch 도구를 wrapping한 Python 함수 
+│   └── __init__.py 
+└── desktop_commander/ # desktop-commander MCP 서버
+	├── write_file.py 
+	├── read_file.py 
+	├── ...
+```
+
+각 MCP 서버의 도구를 Python 함수로 wrapping하여 서버별 폴더 구조로 저장합니다. 에이전트는 이 파일시스템을 탐색하며 필요한 도구만 선택적으로 로드할 수 있습니다.
+
+#### Progressive Discovery
+
+에이전트에게 MCP 도구를 직접 제공하는 대신, **로컬에서 실행 가능한 Python 코드를 생성**하도록 지시합니다. 생성된 코드는 외부 실행 환경에서 실행되며, 그 결과가 에이전트에게 피드백됩니다.
+
+**단계별 프로세스:**
+
+1. **서버 목록 확인**
+   
+   ```python
+   import os
+   print(os.listdir("extensions/wrapped_mcp/"))
+    ```
+
+2. **필요한 서버의 도구 목록 확인**
+    
+    ```python
+    import os
+    print(os.listdir("extensions/wrapped_mcp/mcp_server_fetch"))
+    ```
+    
+3. **필요한 도구 문서 읽기**
+    
+    ```python
+    with open("extensions/wrapped_mcp/mcp_server_fetch/fetch.py") as f:
+        print(f.read())
+    ```
+    
+4. **도구 사용**
+    
+    ```python
+    import asyncio
+    from extensions.wrapped_mcp.mcp_server_fetch import fetch
+    
+    async def main():
+        result = await fetch({"url": "https://example.com"})
+        print(result)
+    
+    asyncio.run(main())
+    ```
+    
+### 5.3. Experiment
+
+MCP를 직접 사용하는 일반적인 방식(**Direct MCP**)과 Code Execution을 통해 사용하는 방식(**Code Execution with MCP**)의 성능을 비교합니다.
+
+#### 실험 세팅
+
+* **평가 방법**: 5개의 태스크 프롬프트 사용
+* **사용 MCP 서버**: `search`, `fetch`, `desktop-commander`
+
+#### 측정 결과
+
+| Metric                   | Direct MCP | Code Execution with MCP | 변화율        |
+| ------------------------ | ---------- | ----------------------- | ---------- |
+| **Duration (sec)**       | 111.3      | 90.3                    | -18.9%     |
+| **System Prompt Tokens** | 12,319     | 741                     | **-94.0%** |
+| **Input Tokens**         | 216,835    | 54,776                  | **-74.7%** |
+| **Output Tokens**        | 4,414      | 2,750                   | -37.7%     |
+| **API Call Count**       | 10.0       | 11.4                    | +14.0%     |
+
+#### 주요 발견
+
+**1. System Prompt 크기의 극적인 감소**
+
+System prompt 토큰 수가 **12,319개에서 741개로 94% 감소**했습니다. 이는 모든 MCP 도구 정의를 미리 로드하는 대신, Progressive Disclosure 방식으로 필요한 도구만 선택적으로 로드했기 때문입니다.
+
+**2. 전체 Input/Output 토큰 감소**
+
+* Input 토큰: 74.7% 감소
+* Output 토큰: 37.7% 감소
+
+Code Execution 방식에서는 에이전트가 **여러 작업을 단일 스크립트로 통합**하는 경향을 보임에 따라, Input 토큰뿐만 아니라 Output 토큰 수도 감소했습니다.
+
+* **Direct MCP**: `search` → 결과 분석 및 요약 → `write_file` (여러 단계로 분리)
+* **Code Execution**: `search`와 `write_file`을 하나의 스크립트에서 처리
+
+**3. API 호출 횟수는 소폭 증가**
+
+Code Execution 방식에서 API 호출이 14% 증가(10.0 → 11.4)했습니다. 이는 Progressive Disclosure를 위해 파일시스템을 단계적으로 탐색해야 하기 때문입니다:
+
+```
+1. 사용 가능한 서버 목록 확인
+2. 특정 서버의 도구 목록 확인
+3. 필요한 도구의 문서 읽기
+4. 도구 사용
+```
+
+**4. 처리 시간 감소**
+
+API 호출 횟수가 증가했음에도 전체 처리 시간은 18.9% 감소했습니다. 이는 각 호출에서 처리하는 토큰 수가 크게 줄어들어 응답 속도가 빨라졌기 때문일 수 있습니다.
+
+#### 개선 가능성
+
+Code Execution 방식에서 에이전트가 여러 작업을 자동으로 통합하는 경향은 때로는 작업을 지나치게 단순화할 수 있습니다.\
+Skills를 활용해 **명시적인 워크플로우**를 따르도록 유도하면 작업의 질과 효율성을 동시에 확보할 수 있을 것으로 보입니다.
+
+#### 종합 평가
+
+실험 결과는 Code Execution with MCP 접근법의 효과를 명확히 보여줍니다:
+* **System prompt 크기 94% 감소**로 컨텍스트 효율성 극대화
+* **전체 토큰 사용량 대폭 감소**로 비용 절감 및 처리 속도 향상
+* **API 호출 횟수의 소폭 증가**는 Progressive Disclosure의 합리적인 트레이드오프
+
+#### 한계 및 고려사항
+
+ 코드 실행 방식은 안전한 샌드박스 환경 구축 등 추가적인 인프라 요구사항을 가져오며, 이는 운영 오버헤드와 보안 고려사항을 증가시킬 수 있습니다.
+
+---
+## 6. References
 
 * https://www.anthropic.com/news/skills
 * https://docs.claude.com/en/docs/agents-and-tools/agent-skills
@@ -361,4 +701,7 @@ Skills 방식에서는 `SKILL.md`를 통해 **체계적인 문제 해결 전략*
 * https://serper.dev/
 * https://brave.com/search/api/
 * https://openai.com/index/browsecomp/
-* 
+* https://www.anthropic.com/engineering/code-execution-with-mcp
+* https://github.com/anthropics/skills/tree/main/skill-creator
+* https://github.com/wonderwhy-er/DesktopCommanderMCP/
+* https://github.com/modelcontextprotocol/servers/tree/HEAD/src/fetch

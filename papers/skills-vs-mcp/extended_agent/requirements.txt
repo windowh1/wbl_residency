@@ -1,0 +1,10 @@
+anthropic
+mcp
+fastmcp
+ddgs
+requests
+pandas 
+jinja2 
+numpy 
+tqdm
+fastapi

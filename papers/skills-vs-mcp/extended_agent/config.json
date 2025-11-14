@@ -1,0 +1,55 @@
+{
+  "claude": {
+    "api_key": "ANTHROPIC_API_KEY",
+    "model": "claude-sonnet-4-5-20250929",
+    "max_tokens": 8192,
+    "temperature": 1.0,
+    "user_prompt": "YOUR_PROMPT"
+  },
+  "code_execution": {
+    "enabled": false,
+    "host": "localhost",
+    "port": 8082
+  },
+  "result_directory": "results",
+  "create_new_skill": false,
+  "mcp_servers": {
+    "mcp-server-search": {
+      "command": "python",
+      "args": [
+        "extensions/mcp/mcp-server-search/search.py"
+      ],
+      "env": {
+        "BRAVE_API_KEY": "BRAVE_API_KEY",
+        "SERPER_API_KEY": "SERPER_API_KEY"
+      }
+    },
+    "mcp-server-fetch": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-fetch"
+      ]
+    },
+    "desktop-commander": {
+      "command": "npx",
+      "args": [
+        "-y", "@wonderwhy-er/desktop-commander@latest"
+      ]
+    }
+  },
+  "skills": {
+    "betas": [
+      "code-execution-2025-08-25", 
+      "skills-2025-10-02"
+    ],
+    "custom_skill_folders": [
+      "extensions/skills/skill-creator"
+    ],
+    "tools": [
+      {
+        "type": "code_execution_20250825", 
+        "name": "code_execution"
+      }
+    ]
+  }
+}
